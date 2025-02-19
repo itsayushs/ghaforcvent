@@ -1,0 +1,36 @@
+name: Manual Environment Selection
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select the environment"
+        required: true
+        default: "dv60"
+        type: choice
+        options:
+          - dv60
+          - S610
+          - pr60
+
+jobs:
+  print-environment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Print selected environment
+        run: |
+          echo "Selected Environment: ${{ github.event.inputs.environment }}"
+
+      - name: Print environment-specific variable
+        run: |
+          if [[ "${{ github.event.inputs.environment }}" == "dv60" ]]; then
+            echo "Variable for Dev: $ENVNAME "
+          elif [[ "${{ github.event.inputs.environment }}" == "S610" ]]; then
+            echo "Variable for Staging: $ENVNAME "
+          elif [[ "${{ github.event.inputs.environment }}" == "pr60" ]]; then
+            echo "Variable for Prod: $ENVNAME "
+          fi
+        env:
+          ENVNAME: ${{ vars.ENVIRON_NAME }}
+        
